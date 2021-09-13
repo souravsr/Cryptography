@@ -1,0 +1,40 @@
+Cryptography speed issue resolved.
+
+Problem in detail:
+By fin.read(buffer) n bytes of data is read and loaded in byte arr[]
+
+An ASCII value like: 208 (‭11010000‬) occupies all 8 bits.
+An ASCII value like: 110 (‭01101110‬) occupies 7 bits.
+
+Now when byte is loaded into int the last 7 bits of byte get copied into last 7 bits of int.
+And the 1 bit at MSB gets loaded at MSB of int.
+It changes the int value, makes it negative.
+
+So,
+1) Code runs for text files as text ascii were all 7 bit (0-127)
+
+2) For 8 bit values the automatic widening type conversion from byte to int fails.
+
+Solution:
+Explicity widening type conversion from byte to int to be handled explicity.
+
+But a statement like: 
+i = (int) b will not help, as it does what is happening automatically.
+
+So lets force the conversion as 8 bits of byte to last 8 bits of int:
+i = b & 0xFF
+
+And now, with buffering and explicit conversion the system is lightening fast.
+
+Sorry for the inconvenience caused, as I had run the system on older JVM and the newer JVM reflected this issue first.
+
+But said, it gave a chance to detect a problem and learn a lesson.
+
+Code is uploaded on the website.
+Download, study and learn.
+We will have Q/A on wednesday.
+
+Overall, enjoy the speed of the system.
+First run requires build time by netbeans.
+Second run onwards it is actual projects execution time.
+Try it for files of size :100mb+ to gbs.
